@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q-VAULT · Квантовият Щит</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020205;
+    --panel: rgba(10, 11, 18, 0.8);
+    --border: #2a2a48;
+    --text: #c8ccee;
+    --purple: #c77dff;
+    --blue: #00d4ff;
+    --gold: #ffd166;
+    --red: #ff3366;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'Share Tech Mono', monospace;
+    overflow-x: hidden; scroll-behavior: smooth;
+  }
+
+  /* Grid Background */
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: linear-gradient(rgba(199, 125, 255, 0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(199, 125, 255, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px; transform: perspective(500px) rotateX(60deg);
+    transform-origin: top center; z-index: -1; opacity: 0.4;
+  }
+
+  header {
+    padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); background: rgba(2, 2, 5, 0.9);
+    position: fixed; top: 0; width: 100%; z-index: 100; backdrop-filter: blur(10px);
+  }
+
+  .logo { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: 3px; }
+  .logo span { color: var(--purple); }
+
+  .nav-btn {
+    background: transparent; border: 1px solid var(--purple); color: var(--purple);
+    padding: 10px 20px; font-family: 'Orbitron', sans-serif; font-size: 0.8rem;
+    text-transform: uppercase; cursor: pointer; transition: 0.3s; border-radius: 4px;
+  }
+  .nav-btn:hover { background: var(--purple); color: #000; box-shadow: 0 0 15px var(--purple); }
+
+  .section {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
+    align-items: center; text-align: center; padding: 100px 20px 40px; position: relative;
+  }
+
+  h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(2.5rem, 5vw, 4.5rem); margin-bottom: 20px; color: #fff; line-height: 1.1; }
+  h1 span { background: -webkit-linear-gradient(0deg, var(--purple), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  
+  p.lead { font-size: 1.2rem; max-width: 700px; margin: 0 auto 40px; color: #8888aa; line-height: 1.6; }
+
+  /* Feature Cards */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; max-width: 1000px; width: 100%; margin-top: 40px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); padding: 40px 30px;
+    border-radius: 12px; transition: 0.3s; position: relative; overflow: hidden; text-align: left;
+  }
+  .card:hover { border-color: var(--blue); transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 212, 255, 0.1); }
+  .card::before { content:''; position: absolute; top:0; left:0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--purple), var(--blue)); opacity: 0; transition: 0.3s; }
+  .card:hover::before { opacity: 1; }
+  
+  .icon { font-size: 2.5rem; margin-bottom: 20px; }
+  .card h3 { font-family: 'Orbitron', sans-serif; font-size: 1.3rem; margin-bottom: 15px; color: var(--gold); }
+  .card p { font-size: 0.95rem; color: #aaa; line-height: 1.5; }
+
+  /* Interactive Abstraction Box */
+  .abstraction-box {
+    background: #000; border: 1px solid var(--border); border-radius: 12px;
+    width: 100%; max-width: 800px; padding: 40px; margin-top: 40px; position: relative;
+  }
+  
+  .math-raw {
+    font-size: 0.7rem; color: var(--muted); word-break: break-all; opacity: 0.5;
+    transition: 1s ease-in-out; height: 150px; overflow: hidden;
+  }
+  
+  .shield-visual {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+    opacity: 0; transition: 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; flex-direction: column; align-items: center;
+  }
+  
+  .shield-icon {
+    width: 100px; height: 120px; border: 4px solid var(--blue); border-radius: 10px 10px 50px 50px;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5), inset 0 0 20px rgba(0, 212, 255, 0.3);
+    background: rgba(0, 212, 255, 0.1); display: flex; justify-content: center; align-items: center;
+  }
+
+  .box-active .math-raw { filter: blur(10px); opacity: 0.1; transform: scale(0.9); }
+  .box-active .shield-visual { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+
+  .phone-mockup {
+    width: 300px; height: 600px; border: 8px solid #222; border-radius: 30px;
+    background: #000; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    margin: 40px auto; display: flex; align-items: center; justify-content: center; flex-direction: column;
+  }
+  .phone-mockup img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
+  .phone-overlay { position: absolute; font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #fff; text-shadow: 0 0 20px var(--purple); }
+
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">Q-VAULT</div>
+    <button class="nav-btn" onclick="document.getElementById('download').scrollIntoView()">Свали Приложението</button>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="section">
+    <h1>Парите на бъдещето се нуждаят от <span>Квантов Щит</span></h1>
+    <p class="lead">Традиционната криптография скоро ще остарее. Q-VAULT използва най-новата FIPS 204 технология, за да защити вашите активи от суперкомпютрите на утрешния ден.</p>
+    <button class="nav-btn" style="font-size: 1.1rem; padding: 15px 30px;" onclick="document.getElementById('how').scrollIntoView()">Как работи?</button>
+  </section>
+
+  <!-- THE STORY / HOW IT WORKS -->
+  <section class="section" id="how" style="background: rgba(4, 4, 10, 0.8);">
+    <h2>Магията зад Завесата</h2>
+    <p class="lead" style="margin-top: 20px;">Ние не ви натоварваме със сложна математика. Вие виждате щита, ние се грижим за числата.</p>
+
+    <!-- Interactive Abstraction -->
+    <div class="abstraction-box" id="absBox">
+      <div class="math-raw" id="mathText">
+        <!-- JS will populate random math here -->
+      </div>
+      <div class="shield-visual">
+        <div class="shield-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        </div>
+        <div style="font-family: 'Orbitron'; color: var(--blue); margin-top: 15px; font-size: 1.2rem; letter-spacing: 2px;">LATTICE SHIELD АКТИВЕН</div>
+      </div>
+    </div>
+    
+    <button class="nav-btn" style="margin-top: 30px;" onclick="toggleAbstraction()">Трансформирай Математиката в Сигурност</button>
+
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <h2>Защо Q-VAULT?</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">🌌</div>
+        <h3>Многомерни Лабиринти</h3>
+        <p>Вместо да крием ключа ви зад формула, ние го крием в многомерна решетка. Дори квантов компютър с безкрайна мощ не може да намери пътя в този хаос.</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h3>Безкомпромисна Скорост</h3>
+        <p>Тежката криптография (Dilithium-3) работи тихо на заден план. Вие изпращате и получавате средства със същата лекота, с която пращате съобщение.</p>
+      </div>
+      <div class="card">
+        <div class="icon">🛡️</div>
+        <h3>FIPS 204 Стандарт</h3>
+        <p>Архитектурата ни покрива най-високите правителствени стандарти (NIST) за пост-квантова защита. Това не е експеримент, това е новата реалност.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- APP SHOWCASE -->
+  <section class="section" id="download" style="background: rgba(10, 8, 16, 0.9); border-top: 1px solid var(--border);">
+    <h2>Вашата Квантова Банка</h2>
+    <p class="lead" style="margin-top: 20px;">Интуитивен дизайн. Абсолютна сигурност. Винаги в джоба ви.</p>
+    
+    <div class="phone-mockup">
+      <div class="phone-overlay">Q-VAULT APP</div>
+      <!-- Decorative matrix falling effect simulation inside phone -->
+      <div style="position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(180deg, transparent, rgba(199, 125, 255, 0.2));"></div>
+    </div>
+
+    <button class="nav-btn" style="font-size: 1.2rem; padding: 18px 40px; background: var(--purple); color: #000;">Изтегли за Android</button>
+  </section>
+
+  <footer style="padding: 40px; text-align: center; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem;">
+    © 2026 Q-VAULT Technologies. Бъдещето е защитено.
+  </footer>
+
+<script>
+  // Generate random math matrix text to simulate complex backend
+  const mathEl = document.getElementById('mathText');
+  let rawText = "";
+  for(let i=0; i<100; i++) {
+    rawText += `A[${i}] = [${Math.random().toString(16).substring(2,8)} ${Math.random().toString(16).substring(2,8)} ${Math.random().toString(16).substring(2,8)}] MLWE_SYNC... <br>`;
+  }
+  mathEl.innerHTML = rawText;
+
+  // Toggle the abstraction visual
+  function toggleAbstraction() {
+    const box = document.getElementById('absBox');
+    box.classList.toggle('box-active');
+  }
+</script>
+</body>
+</html>
